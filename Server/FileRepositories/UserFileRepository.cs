@@ -3,7 +3,7 @@ using RepositoryContracts;
 using System.Text.Json;
 namespace FileRepositories
 {
-    public class UserFileRepository
+    public class UserFileRepository : IUserRepository
     {
         private readonly string filePath = "users.json";
 

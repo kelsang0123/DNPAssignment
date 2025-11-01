@@ -3,7 +3,7 @@ using Entities;
 using RepositoryContracts;
 namespace FileRepositories
 {
-    public class PostFileRepository
+    public class PostFileRepository : IPostRepository
     {
         private readonly string filePath = "posts.json";
 

@@ -3,7 +3,7 @@ using Entities;
 using RepositoryContracts;
 namespace FileRepositories
 {
-    public class CommentFileRepository
+    public class CommentFileRepository : ICommentRepository
     {
          private readonly string filePath = "comments.json";
 
