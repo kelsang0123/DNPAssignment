@@ -4,6 +4,7 @@ using Entities;
 using RepositoryContracts;
 using FileRepositories;
 using DTOs;
+using Microsoft.OpenApi;
 
 namespace WebAPI.Controllers
 {
@@ -11,7 +12,8 @@ namespace WebAPI.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-          private readonly IPostRepository postRepo;
+        private readonly IPostRepository postRepo;
+
         public PostsController(IPostRepository postRepo)
         {
             this.postRepo = postRepo;
@@ -21,7 +23,7 @@ namespace WebAPI.Controllers
           [FromBody] CreatePostDto request,
           [FromServices] IUserRepository userRepo)
         {
-            Post post = new(request.Title, request.Body, request.UserId);
+            Post post = new(request.Title, request.Body, request.UserId, request.UserName);
             Post created = await postRepo.AddAsync(post);
             return Results.Created($"/posts/{created.Id}", created);
         }
@@ -56,11 +58,11 @@ namespace WebAPI.Controllers
                 [FromQuery]string?body=null,
                 [FromQuery]int?userId=null)
         {
-            List<PostDto> posts = postRepo.GetManyAsync().Select(u=> new PostDto
+            List<PostDto> posts = postRepo.GetManyAsync().Select( p=> new PostDto
             {
-                Title = u.Title,
-                Body = u.Body,
-                UserId = u.UserId
+                Title = p.Title,
+                Body = p.Body,
+                UserId = p.UserId,
             }).ToList();
             return Results.Ok(posts);
         }
@@ -84,13 +86,19 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{postId:int}/comments")]
-        public async Task<IResult> GetCommentOfPost(
+        public async Task<IResult> GetCommentsOfPost(
             [FromRoute] int id,
             [FromServices] ICommentRepository commentRepo
         )
         {
-            
-            Results.Ok(dto);
+            List<CommentDto> comments = commentRepo.GetMany().Select(c => new CommentDto
+            {
+                Id = c.Id,
+                Body = c.Body,
+                UserId = c.UserId,
+                PostId = id
+            }).ToList();
+            return (IResult)Ok(comments);
         }
     }
 }

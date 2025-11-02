@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> AddUser([FromBody] CreateUserDTO request)
+        public async Task<ActionResult<User>> AddUser([FromBody] CreateUserDto request)
         {
             try
             {

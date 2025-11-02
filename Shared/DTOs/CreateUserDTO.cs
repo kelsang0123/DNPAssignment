@@ -2,7 +2,7 @@ using System;
 
 namespace DTOs;
 
-public class CreateUserDTO
+public class CreateUserDto
 {
 public required string UserName { get; set; }
 public required string Password{ get; set; }
