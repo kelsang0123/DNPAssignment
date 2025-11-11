@@ -1,16 +1,8 @@
-using System;
-
 namespace Entities;
 
-public class User
+public class User(string userName, string password)
 {
-    public User(string userName, string password)
-    {
-        UserName = userName;
-        Password = password;
-    }
-
     public int Id { get; set; }
-     public string UserName { get; set; }
-        public string Password { get; set; }
+    public string Username { get; set; } = userName;
+    public string Password { get; set; } = password;
 }

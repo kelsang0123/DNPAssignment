@@ -4,15 +4,14 @@ namespace Entities;
 
 public class Comment
 {
-    public Comment(string body, int userId, int postId)
+    public Comment(string Body, int AuthorUserId, int PostId)
     {
-        Body = body;
-        UserId = userId;
-        PostId = postId;
+        this.Body = Body;
+        this.UserId = AuthorUserId;
+        this.PostId = PostId;
     }
-
     public int Id { get; set; }
-        public string Body { get; set; }
-        public int UserId { get; set; }
-        public int PostId { get; set; }
+    public string Body { get; set; }
+    public int UserId { get; set; }
+    public int PostId { get; set; }
 }

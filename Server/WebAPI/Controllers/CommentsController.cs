@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Entities;
-using RepositoryContracts;
-using FileRepositories;
 using DTOs;
+using Entities;
+using Microsoft.AspNetCore.Mvc;
+using RepositoryContracts;
 
-namespace WebAPI.Controllers
-{
+namespace WebAPI.Controllers;
+
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : ControllerBase
@@ -17,7 +15,7 @@ namespace WebAPI.Controllers
         {
             this.commentRepo = commentRepo;
         }
-        [HttpPatch("{id:int}")]
+        [HttpPut("{id:int}")]
         public async Task<IResult> UpdateComment(
             [FromRoute] int id,
             [FromBody] UpdateCommentDto request)
@@ -28,29 +26,44 @@ namespace WebAPI.Controllers
             await commentRepo.UpdateAsync(commentToUpdate);
             return Results.NoContent();
         }
-        [HttpDelete("{id:int}")]
-        public async Task<IResult> DeleteComment(
-            [FromRoute] int id
-        )
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteComment(
+        [FromRoute] int id
+    )
+    {
+        await commentRepo.DeleteAsync(id);
+        return NoContent();
+    }
+    [HttpGet("{id:int}")]
+        public async Task<ActionResult<CommentDto>> GetComment([FromRoute] int id)
+    {
+        Comment comment = await commentRepo.GetSingleAsync(id);
+        CommentDto dto = new()
         {
-              await commentRepo.DeleteAsync(id);
-            return Results.NoContent();
-        }
+            Id = comment.Id,
+            Body = comment.Body,
+            AuthorUserId = comment.UserId,
+            PostId = comment.PostId
+        };
+        return Ok(dto);
+    }
         [HttpGet]
-        public async Task<IResult> GetManyComments(
-            [FromQuery]string?Body=null,
+        public ActionResult<IEnumerable<CommentDto>> GetManyComments(
             [FromQuery]int?UserId=null,
             [FromQuery]int?PostId=null
         )
         {
-           List<CommentDto> commentDtos = commentRepo.GetMany().Select(c=>new CommentDto
+           List<CommentDto> comments = commentRepo.GetMany()
+           .Where(c => UserId == null || c.UserId == UserId)
+           .Where(c => PostId == null || c.PostId == PostId)
+           .Select(c=>new CommentDto
            {
             Id = c.Id,
             Body = c.Body,
-            UserId = c.UserId,
+            AuthorUserId = c.UserId,
             PostId = c.PostId               
-           }).ToList();   
-            return Results.Ok(commentDtos);
+           })
+           .ToList();   
+            return Ok(comments);
         }
     }
-}

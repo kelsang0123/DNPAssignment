@@ -40,7 +40,7 @@ namespace FileRepositories
             await File.WriteAllTextAsync(filePath, postsAsJson);
         }
 
-        public IQueryable<Post> GetManyAsync()
+        public IQueryable<Post> GetMany()
         {
             string postsAsJson = File.ReadAllTextAsync(filePath).Result;
             List<Post> posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson)!;
