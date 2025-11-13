@@ -7,12 +7,12 @@ Accept: application/json
 DELETE {{{{WebAPI_HostAddress}}/api/users/2}}
 Accept: application/json
 ###
-POST {{WebAPI_HostAddress}}/api/users
+POST {{WebAPI_HostAddress}}/api/user
 Accept: application/json
 Content-Type: application/json
 
 {
-    "UserName" : "kelsang",
+    "UserName" : "tom",
     "Password" : "1234"
 }
 

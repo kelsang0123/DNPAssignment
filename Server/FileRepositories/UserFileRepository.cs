@@ -42,7 +42,7 @@ namespace FileRepositories
 
         public IQueryable<User> GetMany()
         {
-            string usersAsJson = File.ReadAllText(filePath);
+            string usersAsJson = File.ReadAllTextAsync(filePath).Result;
             List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson)!;
             return users.AsQueryable();
         }
