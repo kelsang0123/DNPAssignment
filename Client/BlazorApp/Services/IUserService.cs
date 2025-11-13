@@ -1,3 +1,5 @@
+using DTOs;
+
 namespace BlazorApp.Services;
 
 public interface IUserService

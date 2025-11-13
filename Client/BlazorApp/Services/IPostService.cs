@@ -1,13 +1,13 @@
-
+using DTOs;
 namespace BlazorApp.Services;
 
 public interface IPostService
 {
-public async Task<PostDto> AddPostAsync(CreatePostDto request);
-public async Task<PostDto> GetSinglePost(int id);
-public IQueryable<PostDto> GetManyPosts();
-public async Task UpdatePostAsync(int id, UpdatePostDto request);
-public async Task DeletePostAsync(int id);
-public async Task<CommentDto> AddComment(int postId, CreateCommentDto request, IUserService userService, ICommentService commentService);
-public async Task<IEnumerable<CommentDto>> GetCommentsOfPostAsync(int id, ICommentService commentService);
+public Task<PostDto> CreatePostAsync(CreatePostDto request);
+public Task<IEnumerable<PostOnlyDto>> GetPosts();
+public Task<PostDto> GetSinglePost(int id, bool includeAuthor, bool includeComments);
+public Task UpdatePostAsync(int id, UpdatePostDto request);
+public Task DeletePostAsync(int id);
+public Task<CommentDto> AddComment(int postId, CreateCommentDto request, IUserService userService, ICommentService commentService);
+
 }

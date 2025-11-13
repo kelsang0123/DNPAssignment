@@ -1,11 +1,15 @@
 using BlazorApp.Components;
+using BlazorApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
+builder.Services.AddHttpClient<IUserService, HttpUserService>(client =>
+{
+    client.BaseAddress = new Uri("builder.HostEnvironment.BaseAddress");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
