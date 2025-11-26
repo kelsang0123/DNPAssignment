@@ -2,6 +2,7 @@ using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryContracts;
+using WebAPI.GlobalExceptionHandler;
 
 namespace WebAPI.Controllers
 {
@@ -35,14 +36,14 @@ namespace WebAPI.Controllers
             .Any(u => u.Username.ToLower().Equals(userName.ToLower()));
             if (exists)
             {
-                throw new InvalidOperationException(
+                throw new ValidationException(
               $"The username '{userName}' is already taken.");
             }
         }
         [HttpGet("{Id:int}")]
         public async Task<ActionResult<User>> GetSingleUser([FromRoute] int id)
         {
-            User user = await userRepo.GetSingleAsync(id);
+            User? user = await userRepo.GetSingleAsync(id);
             return Ok(user);
         }
         [HttpGet]
@@ -62,7 +63,7 @@ namespace WebAPI.Controllers
              [FromServices] IPostRepository postRepo)
         {
             List<Post> posts = postRepo.GetMany()
-            .Where(p => p.UserId == userId)
+            .Where(p => p.AuthorUserId == userId)
             .ToList();
             return Ok(posts);
         }
@@ -72,7 +73,7 @@ namespace WebAPI.Controllers
            [FromServices] ICommentRepository commentRepo)
         {
             List<Comment> comments = commentRepo.GetMany()
-            .Where(c => c.UserId == userId)
+            .Where(c => c.AuthorUserId == userId)
             .ToList();
             return Ok(comments);
         }
@@ -82,6 +83,7 @@ namespace WebAPI.Controllers
                  [FromBody] UpdateUserDto request)
         {
             User userToUpdate = await userRepo.GetSingleAsync(id);
+            userToUpdate.Id = request.Id;
             userToUpdate.Username = request.UserName;
             userToUpdate.Password = request.Password;
             await userRepo.UpdateAsync(userToUpdate);
