@@ -17,8 +17,8 @@ namespace FileRepositories
         public async Task<Post> AddAsync(Post post)
         {
             string postsAsJson = await File.ReadAllTextAsync(filePath);
-            List<Post> posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson) ?? [];
-            int maxId = posts.Count > 0 ? posts.Max(p => p.Id) : 1;
+            List<Post>? posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson)!;
+            int maxId = posts.Count > 0 ? posts.Max(p => p.Id) : 0;
             post.Id = maxId + 1;
             posts.Add(post);
             postsAsJson = JsonSerializer.Serialize(posts);
@@ -49,15 +49,13 @@ namespace FileRepositories
 
         public async Task<Post> GetSingleAsync(int id)
         {
-            string postsAsJson = File.ReadAllTextAsync(filePath).Result;
+            string postsAsJson = await File.ReadAllTextAsync(filePath);
             List<Post> posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson)!;
             Post? postToGet = posts.SingleOrDefault(p => p.Id == id);
             if (postToGet is null)
             {
                 throw new InvalidOperationException($"Post with ID '{id}' not found");
             }
-            postsAsJson = JsonSerializer.Serialize(postToGet);
-            await File.WriteAllTextAsync(filePath, postsAsJson);
             return postToGet;
         }
 

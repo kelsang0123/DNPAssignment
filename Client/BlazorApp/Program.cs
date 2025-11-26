@@ -10,6 +10,9 @@ builder.Services.AddHttpClient<IUserService, HttpUserService>(client =>
 {
     client.BaseAddress = new Uri("builder.HostEnvironment.BaseAddress");
 });
+builder.Services.AddScoped<IUserService, HttpUserService>();
+builder.Services.AddScoped<IPostService, HttpPostService>();
+builder.Services.AddScoped<ICommentService, HttpCommentService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

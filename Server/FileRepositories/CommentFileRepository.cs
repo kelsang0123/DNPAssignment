@@ -19,7 +19,7 @@ namespace FileRepositories
         {
     	        string commentsAsJson = await File.ReadAllTextAsync(filePath);
     	        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson)!;
-    	        int maxId = comments.Count > 0 ? comments.Max(c => c.Id) : 1;
+    	        int maxId = comments.Count > 0 ? comments.Max(c => c.Id) : 0;
     	        comment.Id = maxId + 1;
     	        comments.Add(comment);
     	        commentsAsJson = JsonSerializer.Serialize(comments);
@@ -50,15 +50,13 @@ namespace FileRepositories
 
         public async Task<Comment> GetSingleAsync(int id)
         {
-            string commentsAsJson = File.ReadAllTextAsync(filePath).Result;
+            string commentsAsJson = await File.ReadAllTextAsync(filePath);
             List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson)!;
             Comment? commentToGet = comments.SingleOrDefault(c => c.Id == id);
             if(commentToGet is null)
             {
                 throw new InvalidOperationException( $"Comment with ID '{id}' not found");
             }
-            commentsAsJson = JsonSerializer.Serialize(commentToGet);
-            await File.WriteAllTextAsync(filePath, commentsAsJson);
             return commentToGet;
         }
 
