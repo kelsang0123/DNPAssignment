@@ -4,6 +4,7 @@ namespace Entities;
 
 public class Comment
 {
+    private Comment(){}
     public Comment(string Body, int AuthorUserId, int PostId)
     {
         this.Body = Body;
