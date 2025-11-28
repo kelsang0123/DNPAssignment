@@ -1,10 +1,30 @@
 ﻿@page "/AddUser"
+@using DTOs
+@using Microsoft.VisualBasic
 @rendermode InteractiveServer
-
-
+@inject IUserService userService
 
 <h1>AddNewUser</h1>
-
+<input @bind="username"/>
+<input @bind="password"/>
 @code {
-
+    string username = "";
+    string password = "";
+    private async Task Create()
+    {
+        try{
+            CreateUserDto dto = new(username, password);
+            await userService.AddUserAsync(dto);
+            showModal = true;
+        }catch{
+          Console.WriteLine(e);
+          msg = e.Message;
+        }
+    }
+    private void Proceed()
+    {
+        showModal = false;
+        navMgr.NavigateTo("/ViewUsers");
+    }
+    
 }
