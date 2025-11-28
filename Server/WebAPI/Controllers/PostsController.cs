@@ -1,6 +1,7 @@
 using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebAPI.Controllers;
@@ -27,7 +28,14 @@ public class PostsController : ControllerBase
 
         Post post = new(request.Title, request.Body, request.AuthorUserId);
         Post created = await postRepo.AddAsync(post);
-        return Results.Created($"/Posts/{created.Id}", created);
+        PostDto dto = new()
+        {
+            Id = created.Id,
+            Title = created.Title,
+            Body = created.Body,
+            AuthorUserId = created.AuthorUserId
+        };
+        return Results.Created($"/Posts/{dto.Id}", dto);
     }
 
     private static async Task VerifyAuthorExists(int userId, IUserRepository userRepo)
@@ -60,7 +68,7 @@ public class PostsController : ControllerBase
     // Or just GET /Posts/{id} if comments should not be included.
 
 
-    [HttpGet("{id:int}")]
+    /*[HttpGet("{id:int}")]         with web api and without efc
     public async Task<IResult> GetPost(
         [FromServices] IUserRepository userRepo,
         [FromServices] ICommentRepository commentRepo,
@@ -92,7 +100,52 @@ public class PostsController : ControllerBase
 
         return Results.Ok(dto);
     }
+    */
 
+    //with efc
+    [HttpGet("{id:int}")]
+    public async Task<IResult> GetPost(
+        [FromRoute] int id,
+        [FromQuery] bool includeAuthor,
+        [FromQuery] bool includeComments)
+    {
+        IQueryable<Post> queryForPost = postRepo
+                                               .GetMany()
+                                               .Where(p => p.Id == id)
+                                               .AsQueryable();
+    if(includeAuthor)
+        {
+            queryForPost = queryForPost.Include(p=>p.User);
+        }
+        if(includeComments)
+        {
+            queryForPost = queryForPost.Include(p=>p.Comments);
+        }
+        PostDto? dto = await queryForPost.Select(post => new PostDto()
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Body = post.Body,
+            AuthorUserId = post.AuthorUserId,
+            Author = includeAuthor
+            ? new UserDto
+            {
+                Id = post.AuthorUserId,
+                UserName = post.User.Username
+            }
+            : null,
+            Comments = includeComments
+            ? post.Comments.Select(c => new CommentDto
+            {
+                Id = c.Id,
+                Body = c.Body,
+                AuthorUserId = c.AuthorUserId
+            }).ToList()
+            : new()
+        })
+        .FirstOrDefaultAsync();
+        return dto == null ? Results.NotFound() : Results.Ok(dto);
+    }
     private static async Task<UserDto?> IncludeAuthorIfRequested(IUserRepository userRepo, bool includeAuthor, int authorId)
     {
         if (!includeAuthor) return null;
@@ -138,14 +191,14 @@ public class PostsController : ControllerBase
 
         // using Select() here. It's a simpler way to convert a list of objects to a list of other objects.
         // See the method above, where I convert Comment to CommentDto in "old fashion approach". 
-        List<PostDto> posts = queryablePosts.Select(post => new PostDto
+        List<PostDto> posts = await queryablePosts.Select(post => new PostDto
             {
                 Id = post.Id,
                 Title = post.Title,
                 Body = post.Body,
                 AuthorUserId = post.AuthorUserId
             })
-            .ToList();
+            .ToListAsync();
         return Results.Ok(posts);
     }
 
@@ -176,7 +229,7 @@ public class PostsController : ControllerBase
             AuthorUserId = created.AuthorUserId,
             PostId = created.PostId
         };
-        return Created($"/Comments/{created.Id}", dto);
+        return Created($"/Comments/{dto.Id}", dto);
         // Here we could either create an endpoint at /posts/{postId}/comments/{commentId} to get a single comment
         // or we could create an endpoint at /comments/{commentId} to get a single comment for a simpler route.
         // I have opted for the second approach. Either is fine.

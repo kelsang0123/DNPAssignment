@@ -1,6 +1,7 @@
 using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebAPI.Controllers;
@@ -73,7 +74,7 @@ public class CommentsController : ControllerBase
     // So I consider this endpoint slightly more generic, and therefore it is in the CommentsController.
     // It's a design choice, there are many valid options.
     [HttpGet]
-    public ActionResult<IEnumerable<CommentDto>> GetComments([FromQuery] int? userId = null, [FromQuery] int? postId = null)
+    public async Task<ActionResult<IEnumerable<CommentDto>>> GetComments([FromQuery] int? userId = null, [FromQuery] int? postId = null)
     {
         // This time I illustrate the usage of Select().
         // This is a LINQ method that allows you to transform the data. We will see it again later in the course,
@@ -81,7 +82,7 @@ public class CommentsController : ControllerBase
         // It takes in a Comment, the 'c' variable, and returns a new CommentDto.
         // This is then done for each Comment in the list, so we get a list of CommentDtos.
 
-        List<CommentDto> comments = commentRepo.GetMany()
+        List<CommentDto> comments = await commentRepo.GetMany()
             .Where(c => userId == null || c.AuthorUserId == userId)
             .Where(c => postId == null || c.PostId == postId)
             .Select(c => new CommentDto
@@ -91,7 +92,7 @@ public class CommentsController : ControllerBase
                 AuthorUserId = c.AuthorUserId,
                 PostId = c.PostId
             })
-            .ToList();
+            .ToListAsync();
 
         return Ok(comments);
     }

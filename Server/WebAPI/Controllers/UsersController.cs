@@ -1,6 +1,7 @@
 using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 using WebAPI.GlobalExceptionHandler;
 
@@ -32,8 +33,8 @@ namespace WebAPI.Controllers
         }
         private async Task VerifyUserNameIsAvailableAsync(string userName)
         {
-            bool exists = userRepo.GetMany()
-            .Any(u => u.Username.ToLower().Equals(userName.ToLower()));
+            bool exists = await userRepo.GetMany()
+            .AnyAsync(u => u.Username.ToLower().Equals(userName.ToLower()));
             if (exists)
             {
                 throw new ValidationException(
@@ -47,14 +48,14 @@ namespace WebAPI.Controllers
             return Ok(user);
         }
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetUsers(
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(
             [FromQuery] string? userNameContains = null)
         {
-            IQueryable<User> users = userRepo.GetMany()
+            IList<User> users = await userRepo.GetMany()
             .Where(
             u => userNameContains == null ||
                    u.Username.ToLower().Contains(userNameContains.ToLower())
-            );
+            ).ToListAsync();
             return Ok(users);
         }
         [HttpGet("{userId:int}/posts")]
@@ -72,9 +73,9 @@ namespace WebAPI.Controllers
            [FromRoute] int userId,
            [FromServices] ICommentRepository commentRepo)
         {
-            List<Comment> comments = commentRepo.GetMany()
+            List<Comment> comments = await commentRepo.GetMany()
             .Where(c => c.AuthorUserId == userId)
-            .ToList();
+            .ToListAsync();
             return Ok(comments);
         }
         [HttpPut("{id:int}")]
