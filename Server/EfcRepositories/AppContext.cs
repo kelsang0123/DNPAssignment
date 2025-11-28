@@ -1,5 +1,6 @@
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 //using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace EfcRepositories;
@@ -12,9 +13,9 @@ public class AppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source = app.db");
-      /*  optionsBuilder.ConfigureWarnings(w =>
-    w.Ignore(RelationalEventId.PendingModelChangesWarning));*/
+        optionsBuilder.UseSqlite("Data Source = Data/app.db");
+       optionsBuilder.ConfigureWarnings(w =>
+    w.Ignore(RelationalEventId.PendingModelChangesWarning));
     }
 
 }

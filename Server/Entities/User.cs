@@ -3,11 +3,6 @@ namespace Entities;
 public class User
 {
     private User(){} 
-    public User(string Username, string Password)
-    {
-        this.Username = Username;
-        this.Password = Password;
-    }
     public int Id { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
