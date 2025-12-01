@@ -1,0 +1,92 @@
+﻿@page "/CreatePost"
+@using BlazorApp.Services
+@using System.Security.Claims
+@using DTOs
+@using Microsoft.AspNetCore.Components.Authorization
+ Microsoft.AspNetCore.Authorization
+@inject IPostService PostService
+@inject NavigationManager NavMgr
+@attribute [Authorize]
+
+<div>
+    <h3>CreatePost</h3>
+    <div>
+        <label>Title:</label>
+        <input type="text" @bind="title"/>
+    </div>
+    <div>
+        <label>Body:</label>
+        <textarea @bind="body"></textarea>
+    </div>
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div>
+            <label>@message</label>
+        </div>
+    }
+    <div>
+        <button @onclick="Create">Create Post</button>
+    </div>
+</div>
+
+@code {
+    private string title = string.Empty;
+    private string body = string.Empty;
+    private string message = string.Empty;
+    [CascadingParameter] public Task<AuthenticationState> State { get; set; } = null!; // suppressing null warning by assigning to null!. I know this will be set when the page is loaded, from OnInitializedAsync().
+
+    private int? currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState = await State;
+        ClaimsPrincipal claimsPrincipal = authenticationState.User;
+        if(claimsPrincipal.Identity is not null && claimsPrincipal.Identity.IsAuthenticated)
+        {
+            if (int.TryParse(claimsPrincipal.FindFirst("Id")?.Value, out int result))
+            {
+                currentUserId = result;
+            }
+        }
+    }
+
+    private async Task Create()
+    {
+        message = string.Empty; // setting message to "" to clear any previous messages
+
+        // some basic validation checks
+        if (string.IsNullOrEmpty(title))
+        {
+            message = "Title is required";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(body))
+        {
+            message = "Body is required";
+            return;
+        }
+        
+        var dto = new CreatePostDto
+        {
+            Title = title,
+            Body = body,
+            AuthorUserId = (int)currentUserId! // currently not implemented
+        };
+
+        try
+        {
+            PostDto result = await PostService.AddPostAsync(dto);
+            NavMgr.NavigateTo("/ViewSinglePost/" + result.Id); // using the navigation manager to redirect to the ViewPost page, where we can see the newly created post.
+            // I append the Id of the created post, so that the specific post data can be loaded on the ViewPost page.
+            // The PostDto in this case contains more information, than I need, and I could have created a smaller DTO, that only contains the Id.
+            // It's better separation of concerns, but you will also end up with a lot of DTOs. So, you must find a balance somewhere.
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            message = e.Message;
+        }
+    }
+
+}

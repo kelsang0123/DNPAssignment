@@ -3,11 +3,10 @@ namespace BlazorApp.Services;
 
 public interface IPostService
 {
-public Task<PostDto> CreatePostAsync(CreatePostDto request);
-public Task<IEnumerable<PostOnlyDto>> GetPosts();
-public Task<PostDto> GetSinglePost(int id, bool includeAuthor, bool includeComments);
-public Task UpdatePostAsync(int id, UpdatePostDto request);
-public Task DeletePostAsync(int id);
-public Task<CommentDto> AddComment(int postId, CreateCommentDto request, IUserService userService, ICommentService commentService);
-
+public Task<PostDto> AddPostAsync(CreatePostDto request);
+public Task<IEnumerable<PostDto>> GetPosts();
+public Task<PostDto> GetSinglePost(int postId);
+    Task<UserDto> GetAuthorOfPost(int authorId);
+ Task<List<CommentDto>> GetCommentsForPost(int postId);
+  Task<CommentDto> AddComment(CreateCommentDto createCommentDto);
 }
