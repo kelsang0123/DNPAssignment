@@ -1,0 +1,34 @@
+@WebAPI_HostAddress = http://localhost:5295
+
+GET {{WebAPI_HostAddress}}/api/users
+Accept: application/json
+
+###
+GET {{WebAPI_HostAddress}}/api/users/2
+Accept: application/json
+
+###
+DELETE {{WebAPI_HostAddress}}/api/users/2
+Accept: application/json
+
+###
+POST {{WebAPI_HostAddress}}/api/users
+Accept: application/json
+Content-Type: application/json
+
+
+{   
+    "UserName" : "Daniel",
+    "Password" : "123aBc"
+}
+
+###
+PUT {{WebAPI_HostAddress}}/api/users/3
+Accept: application/json
+Content-Type: application/json
+
+{
+    "Id" : 1,
+    "UserName" : "Pushpa",
+    "Password" : "91872"
+}

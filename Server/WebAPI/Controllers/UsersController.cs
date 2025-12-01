@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
              [FromServices] IPostRepository postRepo)
         {
             List<Post> posts = postRepo.GetMany()
-            .Where(p => p.AuthorUserId == userId)
+            .Where(p => p.UserId == userId)
             .ToList();
             return Ok(posts);
         }
@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
            [FromServices] ICommentRepository commentRepo)
         {
             List<Comment> comments = await commentRepo.GetMany()
-            .Where(c => c.AuthorUserId == userId)
+            .Where(c => c.UserId == userId)
             .ToListAsync();
             return Ok(comments);
         }

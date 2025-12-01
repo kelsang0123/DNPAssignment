@@ -9,7 +9,13 @@ public class Comment
     public User User{get;set;}
     public Post Post{get;set;}
     public int PostId { get; set; }
-     public int AuthorUserId { get; set; }
+     public int UserId { get; set; }
         private Comment(){}
 
+    public Comment(string body, int userId, int postId)
+    {
+        Body = body;
+        UserId = userId;
+        PostId = postId;
+    }
 }

@@ -59,7 +59,7 @@ public class CommentsController : ControllerBase
         {
             Id = comment.Id,
             Body = comment.Body,
-            AuthorUserId = comment.AuthorUserId,
+            UserId = comment.UserId,
             PostId = comment.PostId
         };
         return Ok(dto);
@@ -83,13 +83,13 @@ public class CommentsController : ControllerBase
         // This is then done for each Comment in the list, so we get a list of CommentDtos.
 
         List<CommentDto> comments = await commentRepo.GetMany()
-            .Where(c => userId == null || c.AuthorUserId == userId)
+            .Where(c => userId == null || c.UserId == userId)
             .Where(c => postId == null || c.PostId == postId)
             .Select(c => new CommentDto
             {
                 Id = c.Id,
                 Body = c.Body,
-                AuthorUserId = c.AuthorUserId,
+                UserId = c.UserId,
                 PostId = c.PostId
             })
             .ToListAsync();

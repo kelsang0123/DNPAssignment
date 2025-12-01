@@ -2,6 +2,12 @@ namespace Entities;
 
 public class User
 {
+    public User(string userName, string password)
+    {
+        Username = userName;
+        Password = password;
+    }
+
     private User(){} 
     public int Id { get; set; }
     public string Username { get; set; }
