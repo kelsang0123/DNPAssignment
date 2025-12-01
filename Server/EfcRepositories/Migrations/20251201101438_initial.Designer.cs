@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfcRepositories.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20251128174107_initial")]
+    [Migration("20251201101438_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -25,14 +25,14 @@ namespace EfcRepositories.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AuthorUserId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -48,9 +48,6 @@ namespace EfcRepositories.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthorUserId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Body")

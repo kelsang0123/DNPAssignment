@@ -22,9 +22,6 @@ namespace EfcRepositories.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AuthorUserId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -48,9 +45,6 @@ namespace EfcRepositories.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthorUserId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Body")

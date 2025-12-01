@@ -1,0 +1,18 @@
+@WebAPI_HostAddress = http://localhost:5295
+###
+GET {{WebAPI_HostAddress}}/api/posts
+Accept: application/json
+###
+POST {{WebAPI_HostAddress}}/api/posts
+Accept: application/json
+Content-Type: application/json
+
+{
+    "Title" : "summer vacation",
+    "Body" : "sajdfsjdfkjsdjf",
+    "UserId" : "1",
+    "UserName" : "kelsang"
+}
+
+
+###

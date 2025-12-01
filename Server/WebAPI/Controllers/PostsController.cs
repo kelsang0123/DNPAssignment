@@ -33,7 +33,7 @@ public class PostsController : ControllerBase
             Id = created.Id,
             Title = created.Title,
             Body = created.Body,
-            AuthorUserId = created.AuthorUserId
+            AuthorUserId = created.UserId
         };
         return Results.Created($"/Posts/{dto.Id}", dto);
     }
@@ -126,11 +126,11 @@ public class PostsController : ControllerBase
             Id = post.Id,
             Title = post.Title,
             Body = post.Body,
-            AuthorUserId = post.AuthorUserId,
+            AuthorUserId = post.UserId,
             Author = includeAuthor
             ? new UserDto
             {
-                Id = post.AuthorUserId,
+                Id = post.UserId,
                 UserName = post.User.Username
             }
             : null,
@@ -139,7 +139,8 @@ public class PostsController : ControllerBase
             {
                 Id = c.Id,
                 Body = c.Body,
-                AuthorUserId = c.AuthorUserId
+                UserId = c.UserId,
+                PostId = c.PostId
             }).ToList()
             : new()
         })
@@ -166,7 +167,7 @@ public class PostsController : ControllerBase
             {
                 Id = c.Id,
                 Body = c.Body,
-                AuthorUserId = c.AuthorUserId,
+                UserId = c.UserId,
                 PostId = c.PostId
             })
             .ToList();
@@ -186,7 +187,7 @@ public class PostsController : ControllerBase
 
         if (userId != null)
         {
-            queryablePosts = queryablePosts.Where(p => p.AuthorUserId == userId);
+            queryablePosts = queryablePosts.Where(p => p.UserId == userId);
         }
 
         // using Select() here. It's a simpler way to convert a list of objects to a list of other objects.
@@ -196,7 +197,7 @@ public class PostsController : ControllerBase
                 Id = post.Id,
                 Title = post.Title,
                 Body = post.Body,
-                AuthorUserId = post.AuthorUserId
+                AuthorUserId = post.UserId
             })
             .ToListAsync();
         return Results.Ok(posts);
@@ -216,17 +217,17 @@ public class PostsController : ControllerBase
         [FromServices] ICommentRepository commentRepo)
     {
         await VerifyPostExists(postId);
-        await VerifyAuthorExists(request.AuthorUserId, userRepo);
+        await VerifyAuthorExists(request.UserId, userRepo);
 
         // could validate incoming data here, or in a business logic layer
 
-        Comment comment = new(request.Body, request.AuthorUserId, postId);
+        Comment comment = new(request.Body, request.UserId, postId);
         Comment created = await commentRepo.AddAsync(comment);
         CommentDto dto = new()
         {
             Id = created.Id,
             Body = created.Body,
-            AuthorUserId = created.AuthorUserId,
+            UserId = created.UserId,
             PostId = created.PostId
         };
         return Created($"/Comments/{dto.Id}", dto);
@@ -255,7 +256,7 @@ public class PostsController : ControllerBase
             {
                 Id = c.Id,
                 Body = c.Body,
-                AuthorUserId = c.AuthorUserId,
+                UserId = c.UserId,
                 PostId = c.PostId
             })
             .AsEnumerable();
@@ -268,7 +269,7 @@ public class PostsController : ControllerBase
         [FromServices] IUserRepository userRepo)
     {
         Post post = await postRepo.GetSingleAsync(postId);
-        User author = await userRepo.GetSingleAsync(post.AuthorUserId);
+        User author = await userRepo.GetSingleAsync(post.UserId);
         UserDto dto = new()
         {
             Id = author.Id,
