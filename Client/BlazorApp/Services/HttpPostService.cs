@@ -11,7 +11,8 @@ public class HttpPostService : IPostService
     {
         this.client = client;
     }
-     public async Task<PostDto> CreatePostAsync(CreatePostDto request)
+
+    public async Task<PostDto> AddPostAsync(CreatePostDto request)
     {
           HttpResponseMessage httpResponse = await client.PostAsJsonAsync("posts", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
@@ -24,41 +25,92 @@ public class HttpPostService : IPostService
             PropertyNameCaseInsensitive = true
         })!;
     }
-     public async Task<IEnumerable<PostOnlyDto>> GetPosts()
+
+      public async Task<IEnumerable<PostDto>> GetPosts()
     {
-        return await client.GetFromJsonAsync<IEnumerable<PostOnlyDto>>("api/posts")
-                 ?? Enumerable.Empty<PostOnlyDto>();
-    }
-    public async Task<PostDto> GetSinglePost(int id, bool includeAuthor, bool includeComments)
-    {
-        return await client.GetFromJsonAsync<PostDto>("api/posts/{id, includeAuthor, includeComments}");
-    }
-    public async Task<CommentDto> AddComment(int id, CreateCommentDto request)
-    {
-     HttpResponseMessage httpResponse = await client.PostAsJsonAsync("comments", request);
-     string response = await httpResponse.Content.ReadAsStringAsync();
-     if(!httpResponse.IsSuccessStatusCode)
+        HttpResponseMessage httpResponse = await client.GetAsync("posts");
+        string response = await httpResponse.Content.ReadAsStringAsync();
+
+        if (!httpResponse.IsSuccessStatusCode)
         {
             throw new Exception(response);
         }
-         return JsonSerializer.Deserialize<CommentDto>(response, new JsonSerializerOptions
+
+        return JsonSerializer.Deserialize<IEnumerable<PostDto>>(response, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         })!;
     }
 
-    public Task UpdatePostAsync(int id, UpdatePostDto request)
+    public async Task<PostDto> GetSinglePost(int postId)
     {
-        throw new NotImplementedException();
+        HttpResponseMessage httpResponse = await client.GetAsync($"posts/{postId}");
+        string response = await httpResponse.Content.ReadAsStringAsync();
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new Exception(response);
+        }
+
+        return JsonSerializer.Deserialize<PostDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
     }
 
-    public Task DeletePostAsync(int id)
+
+    // This method might belong to the IUserService instead.
+    // But, I'm getting the author of a post, so I put it here.
+    public async Task<UserDto> GetAuthorOfPost(int postId)
     {
-        throw new NotImplementedException();
+        HttpResponseMessage httpResponse = await client.GetAsync($"posts/{postId}/author");
+        string response = await httpResponse.Content.ReadAsStringAsync();
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new Exception(response);
+        }
+
+        return JsonSerializer.Deserialize<UserDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
     }
 
-    public Task<CommentDto> AddComment(int postId, CreateCommentDto request, IUserService userService, ICommentService commentService)
+    // And this method might belong to a ICommentService instead.
+    // Same reasoning as above. I'm getting comments for a _post_, so I put it here.
+    // If I were to get comments for a user, I would put it in the IUserService.
+    // If I were interacting with comment without user or post, I would probably use a comment service.
+    // It's your decision, there is not necessarily a right or wrong here. But consistency is at least important. 
+    public async Task<List<CommentDto>> GetCommentsForPost(int postId)
     {
-        throw new NotImplementedException();
+        HttpResponseMessage httpResponse = await client.GetAsync($"posts/{postId}/comments");
+        string response = await httpResponse.Content.ReadAsStringAsync();
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new Exception(response);
+        }
+
+        return JsonSerializer.Deserialize<List<CommentDto>>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
+    }
+
+    public async Task<CommentDto> AddComment(CreateCommentDto createCommentDto)
+    {
+        HttpResponseMessage httpResponse = await client.PostAsJsonAsync($"posts/{createCommentDto.PostId}/comments", createCommentDto);
+        string response = await httpResponse.Content.ReadAsStringAsync();
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new Exception(response);
+        }
+
+        return JsonSerializer.Deserialize<CommentDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
     }
 }
