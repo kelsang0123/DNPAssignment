@@ -1,11 +1,8 @@
-﻿@page "/ViewSinglePost/{PostId:int}" 
-@using DTOs
-@using BlazorApp.Services
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@page "/ViewSinglePost/{PostId:int}"
 @* in the page directive above, I specify the url should contain the post id, like this: localhost:7001/ViewSinglePost/42 and we should then load post with id 42 *@
 @inject IPostService PostService
-
+@inject NavigationManager NavigationMgr
+@rendermode InteractiveServer
 
 @if (postDto is not null)
 {
@@ -14,22 +11,24 @@
         <h6>Author: @author?.UserName</h6>
         <p>@postDto.Body</p>
     </div>
-    <hr/>
+    <br>
     <div>
+        <h4>Comments: </h4>
         @foreach (var comment in comments)
         {
             <div>
-                <p>@comment.Body</p>
+                <p>UserId: @comment.UserId: @comment.Body</p>
             </div>
         }
     </div>
-    @if (isAuthenticated)
-    {
+    <br>
         <div>
+            <label>UserId: </label>
+            <input type="text" @bind="userId"/>
+            <label>Enter your comment: </label>
             <input type="text" @bind="newComment"/>
             <button @onclick="AddComment">Add comment</button>
         </div>
-    }
 }
 else
 {
@@ -40,36 +39,20 @@ else
     <label>@message</label>
 }
 
-@code {
-    [CascadingParameter] public Task<AuthenticationState> State { get; set; }
-
-
+@code{
     [Parameter] public int PostId { get; set; }
 
     private PostDto? postDto;
     private List<CommentDto> comments = [];
+        private List<CommentOnlyDto> allComments = new();
     private UserDto? author;
     private string message = string.Empty;
     private string newComment = string.Empty;
     private int? userId = null!;
-    private bool isAuthenticated;
     
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authenticationState = await State;
-        ClaimsPrincipal claimsPrincipal = authenticationState.User;
-        if (claimsPrincipal.Identity is not null && claimsPrincipal.Identity.IsAuthenticated)
-        {
-            // the user is logged in
-            string? userName = claimsPrincipal.Identity?.Name;
-            IEnumerable<Claim> claims = claimsPrincipal.Claims;
-            string userIdAsString = claims.Single(c => c.Type == "Id").Value;
-            userId = int.Parse(userIdAsString);
-            isAuthenticated = true;
-        }
-
-
-        try
+       try
         {
             postDto = await PostService.GetSinglePost(PostId);
             comments = await PostService.GetCommentsForPost(PostId);

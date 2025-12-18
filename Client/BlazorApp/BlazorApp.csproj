@@ -7,16 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Components\Pages\ViewPosts.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Shared\DTOs\DTOs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Auth\" />
-    <Folder Include="Components\Authentication\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
