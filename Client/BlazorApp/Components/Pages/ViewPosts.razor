@@ -1,54 +1,57 @@
-﻿@page "/ViewPosts"
-@using DTOs
-@using BlazorApp.Services
+@page "/ViewPosts"
+@using System.Runtime.Serialization
 @inject IPostService PostService
+@inject IUserService UserService
 @inject NavigationManager NavMgr
-
-<h3>ViewPosts</h3>
+@rendermode InteractiveServer
+<h3>View Posts</h3>
 <div>
-    @if (!posts.Any()) @* if there are no posts, display a message *@
+    @if(!posts.Any())
     {
         <label>No posts to view</label>
     }
-    @if (!string.IsNullOrEmpty(message))
-    {
-        <label>@message</label>
-    }
-    
-    @foreach (var post in posts)
-    {
-        <div class="post-box">
-            @* My PostDto does not contain author name. I could fetch that for each post, but that would require many requests, and be expensive *@
-            @* Alternatively, I could have the server get the author name, when creating the PostDtos. *@
-
-            <h4 class="post-title" @onclick="() => ViewSinglePost(post.Id)">@post.Title</h4>
+    @if(!string.IsNullOrEmpty(message)){
+        <div>
+            <label>@message</label>
         </div>
     }
+    <div class="col-12">
+         <li class="list-group-item list-group-item-action flex-column align-items-start">
+                Title <span></span>AuthorName
+            </li>
+        @foreach(var post in allPosts)
+        {
+            <a href="/ViewSinglePost/@post.id" class="list-group-item list-group-item-action flex-column align-items-start">
+                @post.Title <span> </span>@post.AuthorName
+            </a>
+        }
+    </div>
 </div>
 
-@code {
-    private IEnumerable<PostDto> posts = []; // initialize to empty list. 
+@code{
     private string message = string.Empty;
-
-    // this method is automatically called when the component is initialized, we use it to load any data,
-    // that should initially be displayed, without the user explicitly having to press a button.
+    private IEnumerable<PostDto> posts = [];
+        private List<PostOnlyDto> allPosts = new();
+    private List<UserDto> users = new();
+    public PostDto? postDto;
+//    public string ViewPostDetailURI{get; set;}
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            posts = await PostService.GetPosts();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            message = e.Message;
-        }
-    }
-
-    private void ViewSinglePost(int postId)
+       posts = await PostService.GetPosts();
+        foreach (var p in posts)
     {
-        NavMgr.NavigateTo($"ViewSinglePost/{postId}");
+        var author = await PostService.GetAuthorOfPost(p.Id);
+        allPosts.Add(new PostOnlyDto
+        {
+            id = p.Id,
+            Title = p.Title,
+            AuthorName = author.UserName
+        });
+    }
+     }
+    private void NavigateToPostDetail()
+    {
+        NavMgr.NavigateTo("/ViewSinglePost/@post.Id");
     }
 
-}
-
+  }
