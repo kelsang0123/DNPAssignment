@@ -1,0 +1,10 @@
+Server/Entities/bin
+Server/Entities/obj
+Server/WebAPI/bin
+Server/WebAPI/obj
+FileRepositories/bin
+FileRepositories/obj
+RepositoryContracts/bin
+RepositoryContracts/obj
+Shared/bin
+Shared/obj
