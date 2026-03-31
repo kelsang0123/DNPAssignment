@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{DAD03C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Server\Entities\Entities.csproj", "{74210E56-326D-4E1F-9A80-A92B98BD1911}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryContracts", "Server\RepositoryContracts\RepositoryContracts.csproj", "{8768A50E-B458-4838-8F3C-F9211D44F384}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileRepositories", "Server\FileRepositories\FileRepositories.csproj", "{A36C6774-9292-431F-8B21-7AD821C4A9E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +24,18 @@ Global
 		{74210E56-326D-4E1F-9A80-A92B98BD1911}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74210E56-326D-4E1F-9A80-A92B98BD1911}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74210E56-326D-4E1F-9A80-A92B98BD1911}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8768A50E-B458-4838-8F3C-F9211D44F384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8768A50E-B458-4838-8F3C-F9211D44F384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8768A50E-B458-4838-8F3C-F9211D44F384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8768A50E-B458-4838-8F3C-F9211D44F384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A36C6774-9292-431F-8B21-7AD821C4A9E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A36C6774-9292-431F-8B21-7AD821C4A9E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A36C6774-9292-431F-8B21-7AD821C4A9E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A36C6774-9292-431F-8B21-7AD821C4A9E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{74210E56-326D-4E1F-9A80-A92B98BD1911} = {DAD03CFC-D5FA-AC94-41C7-9ABAB326F09E}
+		{8768A50E-B458-4838-8F3C-F9211D44F384} = {DAD03CFC-D5FA-AC94-41C7-9ABAB326F09E}
+		{A36C6774-9292-431F-8B21-7AD821C4A9E5} = {DAD03CFC-D5FA-AC94-41C7-9ABAB326F09E}
 	EndGlobalSection
 EndGlobal
